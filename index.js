@@ -3,8 +3,12 @@ var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var bodyParser = require('body-parser');
+var NodeCache = require("node-cache");
+var detectionCache = new NodeCache({checkperiod: 2});
+var detectionCounter = 0;
 var socket;
 
+// Object timer, with start, stop and reset methods.
 function Timer(funct, time) {
 	var timerObj = setInterval(funct, time);
 
@@ -30,51 +34,76 @@ function Timer(funct, time) {
 	}
 }
 
-var timer = new Timer(function() {
+// Timer that sends special tag when no detections are received in a threshold time.
+var no_detectionTimer = new Timer(function() {
 	console.log("No tags detected, sending default");
 	socket.emit('tag', [{"TAG":"0000000000000000"}])
 }, 2000000);
 
-var tag_pool ={
-	'tags': [{"TAG":'00'}]
-} 
 
 
 app.use(bodyParser.json());
 
-app.post('/', function(req, res, next) {
-	timer.reset(2500);
 
+// ON DETECTION
+app.post('/', function(req, res, next) {
+	//
+	no_detectionTimer.reset(2500);
 	console.log(">>RECEIVING DETECTION " + String(Date.now()));
 	console.log(req.body.reads);
-
 	res.send('Received');
-	if (socket !== undefined ){
-		
-		
-		var envio = {
-			'key': Math.random(),
-			'tags': req.body.reads
-		}
 
+	if (socket !== undefined ){
+
+		// let's search the tag in the cache
+		var target = req.body.reads[0].TAG;
+		detectionCache.get(target, function(err, value) {
+			if (!err){
+				// not found or expired
+				if (value == undefined) {
+						// let's add it
+						var success = detectionCache.set(target, target, 5);
+						if (success) {
+							console.log("//CACHE-INFO: added tag: " + target);
+						} else {
+							console.log("//CACHE-ERROR: can't add tag");
+						}
+				} else {
+					// it exists, so we're going to renew the TTL
+					detectionCache.ttl( target, 5, function(err, changed){
+						if (!err){
+							if (!changed){
+								console.log("//CACHE-ERROR: can't renew TTL");
+							} else {
+								console.log("//CACHE-INFO: renewed tag ");
+							}
+						}
+					});
+				}
+			}
+		});
+
+		// Send all the cache keys to Client
+		var keylist = detectionCache.keys();
+		socket.emit('tag', keylist);
 		console.log(">>SENDING:");
-		console.log(envio.tags);
+		console.log(keylist);
 		console.log('\n');
-		socket.emit('tag', req.body.reads);
-	}
-});
+		}
+	});
 
 console.log('Working');
 
+// ON CONNECTION
 io.on('connection', function(client) {
 	socket = client;
 	console.log('Client connected...');
-	timer.start();
+	no_detectionTimer.start();
 	client.on('join', function(data){
 		console.log(data);
 		client.emit('messages', 'Hello world');
 	});
 });
 
-server.listen(4200);
 
+server.listen(4200);
