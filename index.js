@@ -37,7 +37,9 @@ function Timer(funct, time) {
 // Timer that sends special tag when no detections are received in a threshold time.
 var no_detectionTimer = new Timer(function() {
 	console.log("No tags detected, sending default");
-	socket.emit('tag', [{"TAG":"0000000000000000"}])
+	if (socket !== undefined ){
+		socket.emit('tag', [])
+	}
 }, 2000000);
 
 
@@ -48,13 +50,12 @@ app.use(bodyParser.json());
 // ON DETECTION
 app.post('/', function(req, res, next) {
 	//
-	no_detectionTimer.reset(2500);
+	no_detectionTimer.reset(50000);
 	console.log(">>RECEIVING DETECTION " + String(Date.now()));
-	console.log(req.body.reads);
 	res.send('Received');
 
 	if (socket !== undefined ){
-
+		console.log(req.body);
 		// let's search the tag in the cache
 		var target = req.body.reads[0].TAG;
 		detectionCache.get(target, function(err, value) {
