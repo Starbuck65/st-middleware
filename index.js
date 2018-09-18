@@ -98,14 +98,14 @@ console.log('Working');
 // ON CONNECTION
 io.on('connection', function(client) {
 	socket = client;
-	console.log('*** Client connected: ' + client.id + ' -- Client address: ' + client.address );
+	console.log('*** Client connected: ' + client.id + ' -- Client address: ' + client.handshake.address );
 	no_detectionTimer.start();
 	client.on('join', function(data){
 		console.log(data);
 		client.emit('messages', 'Hello world');
 	});
   client.on('disconnect', function() {
-    console.log('*** Client disconnected: ' + client.id + ' -- Client address: ' + client.address );
+    console.log('*** Client disconnected: ' + client.id + ' -- Client address: ' + client.handshake.address );
    });
 });
 
