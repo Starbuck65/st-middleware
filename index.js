@@ -104,7 +104,7 @@ io.on('connection', function(client) {
 		console.log(data);
 		client.emit('messages', 'Hello world');
 	});
-  socket.on('disconnect', function() {
+  client.on('disconnect', function() {
     console.log('*** Client disconnected: ' + client.id);
    });
 });
