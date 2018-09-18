@@ -55,10 +55,11 @@ app.post('/', function(req, res, next) {
 	res.send('Received');
 
 	if (socket !== undefined ){
+
 		console.log(req.body);
 		// let's search the tag in the cache
 		var target = req.body.reads[0].TAG;
-		detectionCache.get(target, function(err, value) {
+	/*	detectionCache.get(target, function(err, value) {
 			if (!err){
 				// not found or expired
 				if (value == undefined) {
@@ -82,13 +83,13 @@ app.post('/', function(req, res, next) {
 					});
 				}
 			}
-		});
+		});*/
 
 		// Send all the cache keys to Client
-		var keylist = detectionCache.keys();
+		//var keylist = detectionCache.keys();
 		socket.emit('tag', keylist);
 		console.log(">>SENDING:");
-		console.log(keylist);
+		//console.log(keylist);
 		console.log('\n');
 		}
 	});
