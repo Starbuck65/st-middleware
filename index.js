@@ -4,7 +4,7 @@ var server = require('http').createServer(app);
 var io = require('socket.io')(server);
 var bodyParser = require('body-parser');
 var NodeCache = require("node-cache");
-var detectionCache = new NodeCache({checkperiod: 2});
+var detectionCache = new NodeCache({checkperiod: 3});
 var detectionCounter = 0;
 var socket;
 
@@ -98,12 +98,15 @@ console.log('Working');
 // ON CONNECTION
 io.on('connection', function(client) {
 	socket = client;
-	console.log('Client connected...');
+	console.log('*** Client connected: ' + client.id);
 	no_detectionTimer.start();
 	client.on('join', function(data){
 		console.log(data);
 		client.emit('messages', 'Hello world');
 	});
+  socket.on('disconnect', function() {
+    console.log('*** Client disconnected: ' + client.id);
+   });
 });
 
 
