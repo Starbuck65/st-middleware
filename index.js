@@ -87,7 +87,7 @@ app.post('/', function(req, res, next) {
 
 		// Send all the cache keys to Client
 		//var keylist = detectionCache.keys();
-		socket.emit('tag', keylist);
+		//socket.emit('tag', keylist);
 		console.log(">>SENDING:");
 		//console.log(keylist);
 		console.log('\n');
