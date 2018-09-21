@@ -1,6 +1,6 @@
 var express = require('express');
 var app = express();
-var server = require('http').createServer(app);
+var server = require('http').createServer(app, {'pingTimeout': 7000, 'pingInterval': 3000});
 var io = require('socket.io')(server);
 var bodyParser = require('body-parser');
 var NodeCache = require("node-cache");
@@ -108,18 +108,17 @@ io.on('connection', function(client) {
   client.on('disconnect', function() {
     console.log('*** Client disconnected: ' + client.id + ' -- Client address: ' + client.handshake.address );
    });
+	 client.on('pong', function(data){
+			 console.log("Pong received from client");
+	 });
 });
 
 function sendHeartbeat(){
     setTimeout(sendHeartbeat, 8000);
     io.sockets.emit('ping', { beat : 1 });
+		console.log("PING");
 }
 
-io.sockets.on('connection', function (socket) {
-    socket.on('pong', function(data){
-        console.log("Pong received from client");
-    });
-}
 
 setTimeout(sendHeartbeat, 8000);
 
