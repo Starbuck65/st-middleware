@@ -110,5 +110,17 @@ io.on('connection', function(client) {
    });
 });
 
+function sendHeartbeat(){
+    setTimeout(sendHeartbeat, 8000);
+    io.sockets.emit('ping', { beat : 1 });
+}
+
+io.sockets.on('connection', function (socket) {
+    socket.on('pong', function(data){
+        console.log("Pong received from client");
+    });
+}
+
+setTimeout(sendHeartbeat, 8000);
 
 server.listen(4200);
