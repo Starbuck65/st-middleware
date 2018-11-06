@@ -7,6 +7,26 @@ var NodeCache = require("node-cache");
 var detectionCache = new NodeCache({checkperiod: 3});
 var detectionCounter = 0;
 var socket;
+var nodemailer = require('nodemailer');
+
+var materialsHandler = require ('./materialsDownload.js');
+import pdfGen from './pdfGen.js';
+
+
+
+
+
+const transporter = nodemailer.createTransport({
+    host: 'smtp.ethereal.email',
+    port: 465,
+		secure: false,
+    auth: {
+        user: 'q3weizbhqqn2hxrq@ethereal.email',
+        pass: 'J8q6vJBUw3bWTnS95r'
+    }
+});
+
+
 
 // Object timer, with start, stop and reset methods.
 function Timer(funct, time) {
@@ -46,6 +66,34 @@ var no_detectionTimer = new Timer(function() {
 
 app.use(bodyParser.json());
 
+
+app.post('/mail', function (req, res, next){
+	console.log(">>Prepared to send an email " + String(Date.now()));
+	console.log(req.body);
+	const materials = req.body.materials;
+	let _text = '';
+	for (var i = 0; i < materials.length; i++) {
+      	_text += 'Material: ' + materials[i].name + ' ';
+
+  }
+	pdfGen.generateDoc(materials);
+	var mailOptions = {
+  	from: 'xavibalderas@gmail.com',
+  	to: 'franciscojavier.balderas@ikea.com',
+  	subject: 'Testing if the mail function works!',
+  	text: _text
+	};
+
+	transporter.sendMail(mailOptions, function(error, info){
+  	if (error) {
+    	console.log(error);
+  	} else {
+    	console.log('Email sent: ' + info.response);
+  	}
+	});
+	res.send("Email sended");
+
+})
 
 // ON DETECTION
 app.post('/', function(req, res, next) {
@@ -123,3 +171,7 @@ function sendHeartbeat(){
 setTimeout(sendHeartbeat, 8000);
 
 server.listen(4200);
+
+//pdfGen.generateDoc();
+
+//materialsHandler.downloadMaterials();
