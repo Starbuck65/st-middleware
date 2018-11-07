@@ -71,14 +71,14 @@ app.use(bodyParser.json());
 app.post('/mail', function (req, res, next){
 	console.log(">>Prepared to send an email " + String(Date.now()));
 	console.log(req.body);
-	const mail= req.body.mail;
+	const mail= req.body.email;
 	const validMail = validator.validate(mail);
 
 	if (validMail== false){
 		res.send("Email address not valid.");
 		return
 	}
-	 	
+
 	const materials = req.body.materials;
 	let _text = '';
 	for (var i = 0; i < materials.length; i++) {
