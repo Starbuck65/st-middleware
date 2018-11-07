@@ -90,7 +90,7 @@ app.post('/mail', function (req, res, next){
   	to: mail,
   	subject: 'Your moodboard from IKEA Spreitenbach',
   	//text: _text,
-		html: "<h3>Your IKEA moodboard</h3><p>Thanks for create your moodboard with us in IKEA Spreitenbach. In the attachment you have the files with the information.</p><p>Enjoy and see you soon</p><p>IKEA Spreitenbach</p>"
+		html: "<h3>Your IKEA moodboard</h3><p>Thanks for create your moodboard with us in IKEA Spreitenbach. In the attachment you have the files with the information.</p><p>Enjoy and see you soon</p><p>IKEA Spreitenbach</p>",
 		attachments: [
 			{
 				fileName: 'my_moodboard.pdf',
