@@ -16,7 +16,7 @@ const pdfGen = {
      layout: 'landscape', // can be 'landscape'
    });
 
-    doc.pipe(
+    let stream = doc.pipe(
       fs.createWriteStream('pdf/moodboard.pdf').on("error", (err) => {
         console.log(err.message);
       })
@@ -61,7 +61,8 @@ const pdfGen = {
     doc.save();
     doc.fill("black");
     doc.text('#IKEASpreitenbach', 350, 330);
-    doc.end()
+    doc.end();
+    return stream;
   }
 
 }

@@ -14,7 +14,11 @@ import pdfGen from './pdfGen.js';
 
 var validator = require("email-validator");
 
+var lp = require("lp-client");
 
+var options = {};
+
+var printer =  lp(options);
 
 
 const transporter = nodemailer.createTransport({
@@ -65,6 +69,20 @@ var no_detectionTimer = new Timer(function() {
 
 
 app.use(bodyParser.json());
+
+app.post('/print', function (req, res, next){
+	console.log(">>Prepared to print" + String(Date.now()));
+	console.log(req.body);
+	const materials = req.body.materials;
+	let stream = pdfGen.generateDoc(materials);
+	stream.on('finish', () => {
+		printer.queueFile('pdf/moodboard.pdf');
+	});
+	//printer.queueFile('pdf/moodboard.pdf');
+	res.send("Printed");
+
+})
+
 
 
 app.post('/mail', function (req, res, next){
