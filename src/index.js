@@ -89,7 +89,13 @@ app.post('/mail', function (req, res, next){
   	from: 'xavibalderas@gmail.com',
   	to: 'franciscojavier.balderas@ikea.com',
   	subject: 'Testing if the mail function works!',
-  	text: _text
+  	text: _text,
+		attachments: [
+			{
+				fileName: 'moodboard.pdf',
+				path: 'pdf/moodboard.pdf'
+			}
+		]
 	};
 
 	transporter.sendMail(mailOptions, function(error, info){
