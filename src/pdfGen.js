@@ -14,14 +14,6 @@ const pdfGen = {
          right: 0
      },
      layout: 'landscape', // can be 'landscape'
-     info: {
-         Title: 'title',
-         Author: 'author', // the name of the author
-         Subject: '', // the subject of the document
-         Keywords: 'pdf;javascript', // keywords associated with the document
-         CreationDate: 'DD/MM/YYYY', // the date the document was created (added automatically by PDFKit)
-         ModDate: 'DD/MM/YYYY' // the date the document was last modified
-     }
    });
 
     doc.pipe(

@@ -86,13 +86,14 @@ app.post('/mail', function (req, res, next){
   }
 	pdfGen.generateDoc(materials);
 	var mailOptions = {
-  	from: 'xavibalderas@gmail.com',
-  	to: 'franciscojavier.balderas@ikea.com',
-  	subject: 'Testing if the mail function works!',
-  	text: _text,
+  	from: 'no-reply@ikea-schweiz.com',
+  	to: mail,
+  	subject: 'Your moodboard from IKEA Spreitenbach',
+  	//text: _text,
+		html: '<h3>Your IKEA moodboard</h3><p>Thanks for create your moodboard with us in IKEA Spreitenbach. In the attachment you have the files with the information.</p><p>Enjoy and see you soon</p><p>IKEA Spreitenbach</p>'
 		attachments: [
 			{
-				fileName: 'moodboard.pdf',
+				fileName: 'my_moodboard.pdf',
 				path: 'pdf/moodboard.pdf'
 			}
 		]
