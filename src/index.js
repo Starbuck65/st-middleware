@@ -19,8 +19,7 @@ var validator = require("email-validator");
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.ethereal.email',
-    port: 465,
-		secure: false,
+    port: 587,
     auth: {
         user: 'q3weizbhqqn2hxrq@ethereal.email',
         pass: 'J8q6vJBUw3bWTnS95r'
