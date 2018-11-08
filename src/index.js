@@ -14,15 +14,14 @@ import pdfGen from './pdfGen.js';
 
 var validator = require("email-validator");
 
-var exec = require("child-process").exec;
+var exec = require("child_process").exec;
 
 
 const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
+    host: process.env.MAILSERVER,
     auth: {
-        user: 'q3weizbhqqn2hxrq@ethereal.email',
-        pass: 'J8q6vJBUw3bWTnS95r'
+        user: process.env.MAILUSER,
+        pass: process.env.MAILPASS
     }
 });
 
@@ -102,7 +101,7 @@ app.post('/mail', function (req, res, next){
   }
 	pdfGen.generateDoc(materials);
 	var mailOptions = {
-  	from: 'no-reply@ikea-schweiz.com',
+  	from: 'noreply@ikea-schweiz.com',
   	to: mail,
   	subject: 'Your moodboard from IKEA Spreitenbach',
   	//text: _text,
@@ -202,6 +201,8 @@ function sendHeartbeat(){
 setTimeout(sendHeartbeat, 8000);
 
 server.listen(4200);
+
+console.log(process.env);
 
 //pdfGen.generateDoc();
 
