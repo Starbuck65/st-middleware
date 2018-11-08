@@ -72,7 +72,14 @@ app.post('/print', function (req, res, next){
 	let stream = pdfGen.generateDoc(materials);
 	stream.on('finish', () => {
 //		printer.queueFile('pdf/moodboard.pdf');
-    exec("lp /home/pi/apps/st-middleware/pdf/moodboard.pdf");
+    exec("lp /home/pi/apps/st-middleware/pdf/moodboard.pdf", (error, stdout, stderr) => {
+        if (error) {
+            console.error(`exec error: ${error}`);
+            return;
+          }
+        console.log(`stdout: ${stdout}`);
+        console.log(`stderr: ${stderr}`);
+      });
 
 	});
 	//printer.queueFile('pdf/moodboard.pdf');
