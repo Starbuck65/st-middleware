@@ -14,11 +14,7 @@ import pdfGen from './pdfGen.js';
 
 var validator = require("email-validator");
 
-var lp = require("lp-client");
-
-var options = {};
-
-var printer =  lp(options);
+var exec = require("child-process").exec;
 
 
 const transporter = nodemailer.createTransport({
@@ -76,7 +72,9 @@ app.post('/print', function (req, res, next){
 	const materials = req.body.materials;
 	let stream = pdfGen.generateDoc(materials);
 	stream.on('finish', () => {
-		printer.queueFile('pdf/moodboard.pdf');
+//		printer.queueFile('pdf/moodboard.pdf');
+    exec("lp /home/pi/apps/st-middleware/pdf/moodboard.pdf");
+
 	});
 	//printer.queueFile('pdf/moodboard.pdf');
 	res.send("Printed");
