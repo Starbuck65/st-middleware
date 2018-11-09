@@ -19,10 +19,12 @@ var exec = require("child_process").exec;
 
 const transporter = nodemailer.createTransport({
     host: process.env.MAILSERVER,
+    post: 25,
     auth: {
         user: process.env.MAILUSER,
         pass: process.env.MAILPASS
-    }
+    }.
+    tls: {rejectUnauthorized: false }
 });
 
 
