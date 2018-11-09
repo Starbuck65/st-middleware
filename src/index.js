@@ -6,7 +6,7 @@ var bodyParser = require('body-parser');
 var NodeCache = require("node-cache");
 var detectionCache = new NodeCache({checkperiod: 3});
 var detectionCounter = 0;
-var socket;
+var sockets = [];
 var nodemailer = require('nodemailer');
 
 var materialsHandler = require ('./materialsDownload.js');
@@ -19,11 +19,10 @@ var exec = require("child_process").exec;
 
 const transporter = nodemailer.createTransport({
     host: process.env.MAILSERVER,
-    post: 25,
     auth: {
         user: process.env.MAILUSER,
         pass: process.env.MAILPASS
-    }.
+    },
     tls: {rejectUnauthorized: false }
 });
 
@@ -58,8 +57,13 @@ function Timer(funct, time) {
 // Timer that sends special tag when no detections are received in a threshold time.
 var no_detectionTimer = new Timer(function() {
 	console.log("No tags detected, sending default");
-	if (socket !== undefined ){
-		socket.emit('tag', [])
+	if (sockets.length !== 0 ){
+    for (var i = 0; i < sockets.length; i++) {
+      if (sockets[i] !== undefined){
+		      sockets[i].emit('tag', []);
+      }
+    }
+
 	}
 }, 2000000);
 
@@ -141,7 +145,7 @@ app.post('/', function(req, res, next) {
 	console.log(">>RECEIVING DETECTION " + String(Date.now()));
 	res.send('Received');
 
-	if (socket !== undefined ){
+	if (sockets.length !== 0 ){
 
 		console.log(req.body);
 		// let's search the tag in the cache
@@ -174,7 +178,12 @@ app.post('/', function(req, res, next) {
 
 		// Send all the cache keys to Client
 		var keylist = detectionCache.keys();
-		socket.emit('tag', keylist.sort());
+    for (var i = 0; i < sockets.length; i++) {
+      if (sockets[i] !== undefined){
+		      sockets[i].emit('tag', keylist.sort());
+      }
+    }
+
 		console.log(">>SENDING:");
     console.log(keylist);
 		console.log('\n');
@@ -185,7 +194,7 @@ console.log('Working');
 
 // ON CONNECTION
 io.on('connection', function(client) {
-	socket = client;
+	sockets.push(client);
 	console.log('*** Client connected: ' + client.id + ' -- Client address: ' + client.handshake.address );
 	no_detectionTimer.start();
 	client.on('join', function(data){
